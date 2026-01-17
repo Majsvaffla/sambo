@@ -1,0 +1,62 @@
+[project]
+authors = [
+  {name = "David Svenson", email = "davidsvenson@outlook.com"},
+]
+name = "sambo"
+
+description = ""
+version = "0.0.1"
+
+dependencies = [
+  "dj-database-url>=3.1.0",
+  "django>=6.0.1",
+  "django-stubs-ext>=5.2.8",
+  "gunicorn>=23.0.0",
+  "htpy>=25.12.0",
+  "psycopg[binary]>=3.3.2",
+  "sentry-sdk[django]>=2.49.0",
+]
+requires-python = ">=3.13,<3.14"
+
+[dependency-groups]
+dev = [
+  "django-stubs[compatible-mypy]>=5.2.8",
+  "mypy>=1.19.1",
+  "pre-commit>=4.5.1",
+  "ruff>=0.14.13",
+]
+
+[build-system]
+build-backend = "flit_core.buildapi"
+requires = ["flit_core >=3.2,<4"]
+
+[tool.ruff]
+line-length = 120
+lint.select = [
+  "F",
+  "E",
+  "W",
+  "I",
+  "B",
+  "C4",
+  "TCH",
+  "RUF100",
+  "DJ",
+  "DTZ",
+  "UP",
+  "TID",
+]
+
+[tool.mypy]
+files = ["sambo"]
+plugins = ["mypy_django_plugin.main"]
+strict = true
+strict_equality = true
+
+[tool.django-stubs]
+django_settings_module = "sambo.settings.dev"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "sambo.settings.dev"
+addopts = "--reuse-db"
+python_files = "*_test.py"

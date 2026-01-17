@@ -1,0 +1,8 @@
+.venv
+.mypy_cache
+.vscode
+*.pyc
+*.egg-info
+.cache
+/dist
+.env

@@ -1,0 +1,25 @@
+#! /usr/bin/env bash
+
+set -xeuo pipefail
+
+copy-plaintext() {
+    scp "$1" "root@sambo.tordavid.xyz:/var/lib/sambo/$1" > /dev/null
+}
+
+copy-encrypted() {
+    age --decrypt --identity "$AGE_IDENTITY" "$1" | ssh root@sambo.tordavid.xyz "cat > /var/lib/sambo/$2"
+}
+
+# Copy required configuration files.
+copy-plaintext Caddyfile
+copy-plaintext compose.yml
+copy-plaintext init-user-db.sh
+copy-encrypted prod.env.enc .env
+
+docker() {
+    ssh root@sambo.tordavid.xyz "docker $@"
+}
+
+# Pull image and restart services.
+docker pull ghcr.io/majsvaffla/sambo:latest
+docker compose --file /var/lib/sambo/compose.yml --env-file /var/lib/sambo/.env up --detach

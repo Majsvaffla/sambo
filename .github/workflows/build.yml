@@ -1,0 +1,30 @@
+name: build
+on:
+  push:
+    branches: main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+
+      - name: Build Docker image
+        run: bin/build-image
+        env:
+          TAG: ${{ github.sha }}
+
+      - name: Tag and push images
+        run: |
+          docker tag ghcr.io/majsvaffla/sambo:${{ github.sha }} ghcr.io/majsvaffla/sambo:latest
+          docker push ghcr.io/majsvaffla/sambo:${{ github.sha }}
+          docker push ghcr.io/majsvaffla/sambo:latest

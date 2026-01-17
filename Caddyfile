@@ -1,0 +1,17 @@
+{
+	email davidsvenson@outlook.com
+}
+
+sambo.tordavid.xyz {
+	reverse_proxy app:8000
+
+	handle_path /static/* {
+		root * /srv/static
+		file_server
+	}
+
+	handle_path /media/* {
+		root * /srv/media
+		file_server
+	}
+}

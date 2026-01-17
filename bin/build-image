@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+PROJECT_ROOT="$(realpath $(dirname $0)/../)"
+cd "$PROJECT_ROOT"
+
+rm -rf dist
+mkdir dist
+
+cp Dockerfile dist
+uv build --wheel
+
+docker build -t "ghcr.io/majsvaffla/sambo:$TAG" dist

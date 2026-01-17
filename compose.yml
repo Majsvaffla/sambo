@@ -1,0 +1,57 @@
+services:
+  app:
+    image: ghcr.io/majsvaffla/sambo:latest
+    ports:
+      - 127.0.0.1:8002:8000
+    volumes:
+      - /var/www/sambo.tordavid.xyz/static:/sambo/static
+      - /var/www/sambo.tordavid.xyz/media:/sambo/media
+    environment:
+      DJANGO_SETTINGS_MODULE: sambo.settings.prod
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      BUGSINK_DSN: ${BUGSINK_DSN}
+    command: gunicorn --bind 0.0.0.0:8000 --workers 2 sambo.wsgi:application
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      collectstatic:
+        condition: service_completed_successfully
+      database:
+        condition: service_healthy
+
+  migrate:
+    image: ghcr.io/majsvaffla/sambo:latest
+    environment:
+      DJANGO_SETTINGS_MODULE: sambo.settings.prod
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+    command: django-admin migrate
+    depends_on:
+      database:
+        condition: service_healthy
+
+  collectstatic:
+    image: ghcr.io/majsvaffla/sambo:latest
+    volumes:
+      - /var/www/sambo.tordavid.xyz/static:/sambo/static
+    environment:
+      DJANGO_SETTINGS_MODULE: sambo.settings.prod
+      SECRET_KEY: ${SECRET_KEY}
+    command: django-admin collectstatic --noinput
+
+  database:
+    image: postgres:18-alpine@sha256:b40d931bd0e7ce6eecc59a5a6ac3b3c04a01e559750e73e7086b6dbd7f8bf545
+    volumes:
+      - /var/lib/sambo/pgdata:/var/lib/postgresql
+      - ./init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+    environment:
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_SUPERUSER_PASSWORD}
+    restart: always
+    healthcheck:
+      test: pg_isready -d sambo
+      interval: 2s
+      timeout: 5s
+      retries: 5
