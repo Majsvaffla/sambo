@@ -49,6 +49,8 @@ class User(AbstractBaseUser):
             return True
 
         valid_perms = (
+            "todo_list",
+            "todo_item",
         )
 
         if perm not in valid_perms:

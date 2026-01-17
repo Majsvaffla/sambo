@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.staticfiles",
     "sambo",
+    "sambo.todo",
 ]
 
 MIDDLEWARE = [
