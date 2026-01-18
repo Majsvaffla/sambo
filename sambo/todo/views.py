@@ -1,10 +1,11 @@
 from uuid import UUID
+
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 
 from . import components
 from .forms import ItemForm
-from .models import CheckListItem, CheckList
+from .models import CheckList, CheckListItem
 
 
 def check_list(request: HttpRequest, list_identifier: UUID) -> HttpResponse:
