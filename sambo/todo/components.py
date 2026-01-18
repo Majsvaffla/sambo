@@ -6,7 +6,7 @@ from django.middleware import csrf
 from django.templatetags.static import static
 from django.urls import reverse
 
-from .models import CheckListItem, CheckList
+from .models import CheckList, CheckListItem
 
 
 def item(instance: CheckListItem) -> h.Element:
@@ -70,12 +70,12 @@ def check_list(request: HttpRequest, instance: CheckList) -> HttpResponse:
                         h.form(
                             style="margin-bottom: var(--wa-space-m)",
                             hx_post=reverse("check_list", args=[instance.identifier]),
-                            hx_trigger="submit",
+                            hx_trigger="submit,plus-clicked",
                             hx_target="ol",
                             hx_swap="afterbegin",
                         )[
                             h.wa_input(
-                                {"@submit.outside": '$el.value = ""'},
+                                {"@submit.outside": '$el.value = ""', "@plus-clicked": '$el.value = ""'},
                                 name="description",
                                 placeholder="Lägg till ny punkt",
                                 pill=True,
@@ -84,6 +84,7 @@ def check_list(request: HttpRequest, instance: CheckList) -> HttpResponse:
                                 style="min-width: 332px",
                             )[
                                 h.wa_icon(
+                                    {"@click": '$dispatch("plus-clicked")'},
                                     slot="start",
                                     name="plus",
                                     variant="solid",
