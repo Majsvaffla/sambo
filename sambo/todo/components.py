@@ -18,7 +18,6 @@ def item(instance: CheckListItem) -> h.Element:
         pill=True,
         size="medium",
         appearance="filled",
-        style="min-width: 332px",
         value=instance.description,
         name="description",
         hx_post=reverse("check_list_item", args=[instance.list.identifier, instance.pk]),
@@ -29,7 +28,6 @@ def item(instance: CheckListItem) -> h.Element:
             slot="start",
             name="minus",
             variant="solid",
-            style="color: black",
             hx_delete=reverse("check_list_item", args=[instance.list.identifier, instance.pk]),
             hx_target="ol",
             hx_swap="innerHTML",
@@ -59,16 +57,16 @@ def check_list(request: HttpRequest, instance: CheckList) -> HttpResponse:
                 ],
                 h.link(rel="stylesheet", href=static("vendor/webawesome/styles/webawesome.css")),
                 h.link(rel="stylesheet", href=static("vendor/webawesome/styles/themes/awesome.css")),
+                h.link(rel="stylesheet", href=static("todo/styles.css")),
                 h.script(type="module", src=static("vendor/webawesome/webawesome.loader.js")),
                 h.script(defer=True, src=static("vendor/alpinejs.min.js")),
                 h.script(defer=True, src=static("vendor/htmx.min.js")),
             ],
             h.body(hx_headers=f'{{"X-CSRFToken": "{csrf.get_token(request)}"}}', x_data="")[
-                h.main(".wa-stack", style="align-items: center")[
-                    h.section(".wa-card", style="max-width: 512px")[
+                h.main(".wa-stack")[
+                    h.section(".wa-card")[
                         h.h1(slot="header")[instance.name],
                         h.form(
-                            style="margin-bottom: var(--wa-space-m)",
                             hx_post=reverse("check_list", args=[instance.identifier]),
                             hx_trigger="submit,plus-clicked",
                             hx_target="ol",
@@ -81,18 +79,16 @@ def check_list(request: HttpRequest, instance: CheckList) -> HttpResponse:
                                 pill=True,
                                 size="medium",
                                 with_clear=True,
-                                style="min-width: 332px",
                             )[
                                 h.wa_icon(
                                     {"@click": '$dispatch("plus-clicked")'},
                                     slot="start",
                                     name="plus",
                                     variant="solid",
-                                    style="color: black",
                                 )
                             ],
                         ],
-                        h.ol(".wa-stack.wa-gap-m", style="list-style: none; margin-inline-start: 0")[items(instance)],
+                        h.ol(".wa-stack.wa-gap-m")[items(instance)],
                     ]
                 ]
             ],
