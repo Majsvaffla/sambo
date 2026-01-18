@@ -1,11 +1,13 @@
 from __future__ import annotations
-from django.utils.safestring import mark_safe
+
+import htpy as h
 from django.contrib import admin
 from django.urls import reverse
-import htpy as h
+from markupsafe import Markup
+
 from sambo.admin import site
 
-from .models import CheckListItem, CheckList
+from .models import CheckList, CheckListItem
 
 
 class ItemInline(admin.TabularInline[CheckListItem, CheckList]):
@@ -25,8 +27,10 @@ class ListAdmin(admin.ModelAdmin[CheckList]):
     inlines = [ItemInline]
 
     @admin.display(description="URL")
-    def admin_url(self, instance: CheckList) -> str:
-        return h.a(href=reverse("check_list", args=[instance.identifier]), target="_blank")["Visa lista ", h.wa_icon(name="arrow-up-right-from-square")]
+    def admin_url(self, instance: CheckList) -> h.Element:
+        return h.a(href=reverse("check_list", args=[instance.identifier]), target="_blank")[
+            "Visa lista ", h.wa_icon(name="arrow-up-right-from-square")
+        ]
 
     @admin.display(description="Antal punkter")
     def admin_number_of_items(self, instance: CheckList) -> str:
