@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 
 import htpy as h
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest
 from django.templatetags.static import static
 from django.urls import reverse
 

@@ -1,0 +1,30 @@
+main {
+    wa-button:not([pill=""]) {
+        min-width: 30%;
+    }
+
+    section {
+        text-align: center;
+    }
+
+    form .actions {
+        display: flex;
+        justify-content: space-between;
+        &:has(wa-button:first-child:last-child) {
+            justify-content: end;
+        }
+
+        wa-button {
+            margin-top: var(--wa-space-l);
+        }
+    }
+
+    .nowrap {
+        white-space: nowrap;
+    }
+
+    tbody tr {
+        cursor: pointer;
+        user-select: none;
+    }
+}
