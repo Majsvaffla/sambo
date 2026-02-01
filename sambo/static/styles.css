@@ -1,0 +1,13 @@
+main {
+    align-items: center;
+
+    wa-card {
+        width: 650px;
+
+        @media (width < 768px) {
+            border: none;
+            box-shadow: none;
+            width: 100%;
+        }
+    }
+}

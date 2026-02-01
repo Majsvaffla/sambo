@@ -47,7 +47,6 @@ def check_list(request: HttpRequest, instance: CheckList) -> h.Element:
         title=instance.name.capitalize(),
         head=[
             h.link(rel="stylesheet", href=static("todo/styles.css")),
-            h.script(src=static("todo/script.js")),
         ],
         main=[
             h.section(".wa-card")[

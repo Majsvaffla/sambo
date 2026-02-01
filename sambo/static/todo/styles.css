@@ -1,29 +1,22 @@
 main {
+    form {
+        margin-bottom: var(--wa-space-m);
+    }
 
-    align-items: center;
+    wa-input {
+        min-width: 332px;
 
-    .wa-card {
-        max-width: 512px;
+        wa-icon {
+            color: black;
 
-        form {
-            margin-bottom: var(--wa-space-m);
-        }
-
-        wa-input {
-            min-width: 332px;
-
-            wa-icon {
-                color: black;
-
-                @media (prefers-color-scheme: dark) {
-                    color: white;
-                }
+            @media (prefers-color-scheme: dark) {
+                color: white;
             }
         }
+    }
 
-        ol {
-            list-style-type: none;
-            margin-inline-start: 0;
-        }
+    ol {
+        list-style-type: none;
+        margin-inline-start: 0;
     }
 }

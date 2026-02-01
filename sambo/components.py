@@ -23,9 +23,11 @@ def page(request: HttpRequest, *, title: str, main: h.Node, head: h.Node) -> h.E
                 # https://www.abeautifulsite.net/posts/flash-of-undefined-custom-elements/
                 ":not(:defined) { visibility: hidden; }"
             ],
+            h.link(rel="stylesheet", href=static("styles.css")),
             h.link(rel="stylesheet", href=static("vendor/webawesome/styles/webawesome.css")),
             h.link(rel="stylesheet", href=static("vendor/webawesome/styles/themes/awesome.css")),
             h.script(type="module", src=static("vendor/webawesome/webawesome.loader.js")),
+            h.script(defer=True, src=static("script.js")),
             h.script(defer=True, src=static("vendor/alpinejs.min.js")),
             h.script(defer=True, src=static("vendor/htmx.min.js")),
             head,
