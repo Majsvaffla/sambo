@@ -5,7 +5,6 @@ from django.http import HttpRequest, HttpResponse
 from django.middleware import csrf
 from django.templatetags.static import static
 from django.urls import reverse
-from markupsafe import Markup
 
 from .models import CheckList, CheckListItem
 

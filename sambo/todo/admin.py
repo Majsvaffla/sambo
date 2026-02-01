@@ -3,7 +3,6 @@ from __future__ import annotations
 import htpy as h
 from django.contrib import admin
 from django.urls import reverse
-from markupsafe import Markup
 
 from sambo.admin import site
 
