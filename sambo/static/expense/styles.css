@@ -1,0 +1,16 @@
+main {
+
+    align-items: center;
+
+    wa-card {
+        max-width: 512px;
+    }
+
+    wa-button:not([pill=""]) {
+        width: 100%;
+    }
+
+    section {
+        text-align: center;
+    }
+}

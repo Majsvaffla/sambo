@@ -61,7 +61,7 @@ def check_list(request: HttpRequest, instance: CheckList) -> HttpResponse:
                 h.script(type="module", src=static("vendor/webawesome/webawesome.loader.js")),
                 h.script(defer=True, src=static("vendor/alpinejs.min.js")),
                 h.script(defer=True, src=static("vendor/htmx.min.js")),
-                h.script(src=static("todo/script.js")),
+                h.script(src=static("script.js")),
             ],
             h.body(hx_headers=f'{{"X-CSRFToken": "{csrf.get_token(request)}"}}', x_data="")[
                 h.main(".wa-stack")[
