@@ -9,5 +9,24 @@ main {
             box-shadow: none;
             width: 100%;
         }
+
+        h1 {
+            margin: 0;
+        }
+    }
+
+    wa-dropdown {
+        a {
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: none;
+            }
+        }
+    }
+
+    tbody tr:hover {
+        background-color: var(--wa-color-neutral-fill-quiet);
     }
 }

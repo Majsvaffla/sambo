@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from datetime import date
 from typing import TYPE_CHECKING
 
+from dateutil.relativedelta import relativedelta
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -12,7 +14,6 @@ from .forms import ExpenseForm
 from .models import Bill, Expense
 
 if TYPE_CHECKING:
-    from datetime import date
     from uuid import UUID
 
 
@@ -26,12 +27,33 @@ def _hx_redirect_to_bill(bill_identifier: UUID) -> HttpResponse:
 
 def bill(request: HttpRequest, bill_identifier: UUID) -> HttpResponse:
     bill_instance = get_object_or_404(Bill.objects, identifier=bill_identifier)
+    today = _today()
 
     if request.method == "GET":
-        return HttpResponse(components.bill_page(request, bill_instance, _today()))
+        if request.GET.get("action") == "copy":
+            if "spent_at" in request.GET:
+                spent_at = date.fromisoformat(request.GET["spent_at"])
+            else:
+                last_month = today - relativedelta(months=1)
+                spent_at = date(last_month.year, last_month.month, 1)
+
+            return HttpResponse(components.copy_page(request, bill_instance, spent_at))
+
+        return HttpResponse(components.bill_page(request, bill_instance, today))
+
+    if request.method == "POST":
+        if "action" not in request.POST or "expenses" not in request.POST:
+            return HttpResponse(status=400)
+
+        assert request.POST["action"] == "copy"
+
+        bill_instance.expenses.bulk_create(
+            Expense(description=expense.description, amount=0, bill=bill_instance)
+            for expense in bill_instance.expenses.filter(pk__in=(int(x) for x in request.POST.getlist("expenses")))
+        )
+        return _hx_redirect_to_bill(bill_identifier)
 
     if request.method == "PATCH":
-        today = _today()
         bill_instance.expenses.filter(settled_at__gte=today).update(settled_at=today)
         return _hx_redirect_to_bill(bill_identifier)
 

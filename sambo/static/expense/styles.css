@@ -1,5 +1,5 @@
 main {
-    wa-button:not([pill=""]) {
+    wa-button:not([pill=""]):not(:has(wa-icon)) {
         min-width: 30%;
     }
 
@@ -23,8 +23,16 @@ main {
         white-space: nowrap;
     }
 
-    tbody tr {
+    tbody tr.editable {
         cursor: pointer;
         user-select: none;
+    }
+
+    form table {
+        margin-top: var(--wa-space-l);
+
+        tr:first-child {
+            border-top: none;
+        }
     }
 }

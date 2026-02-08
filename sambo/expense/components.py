@@ -1,9 +1,9 @@
+import json
 from collections.abc import Iterable
 from datetime import date
 
 import htpy as h
 from django.http import HttpRequest
-from django.middleware import csrf
 from django.templatetags.static import static
 from django.urls import reverse
 
@@ -24,22 +24,42 @@ def _page(request: HttpRequest, *content: h.Node, title: str) -> h.Element:
     )
 
 
-def expense(instance: Expense) -> h.Element:
+def expense_row(instance: Expense, *, editable: bool, checkable: bool) -> h.Element:
     return h.tr(
-        ".expense",
         {
             "@click": rf'location.href = "{reverse("expense_edit", args=[instance.bill.identifier, instance.pk])}"',
-        },
+        }
+        if editable
+        else {},
+        class_=["expense", {"editable": editable}],
     )[
         h.th(scope="row")[instance.description],
         h.td[instance.spent_at.isoformat()],
         h.td(".nowrap")[format_money(instance.amount)],
+        checkable
+        and h.td[
+            h.wa_checkbox(
+                {
+                    "@change": r"""
+                        if ($event.target.checked) {
+                            numberOfCheckedExpenses += 1
+                        } else {
+                            numberOfCheckedExpenses -= 1
+                        }
+                    """,
+                },
+                name="expenses",
+                value=instance.pk,
+                checked=True,
+                size="large",
+            )
+        ],
     ]
 
 
-def expenses(instance: Bill, settled_at: date) -> Iterable[h.Element]:
-    for i in instance.expenses.filter(settled_at__gt=settled_at).order_by("-spent_at"):
-        yield expense(i)
+def expense_rows(expenses: Iterable[Expense], *, editable: bool, checkable: bool) -> Iterable[h.Element]:
+    for i in expenses:
+        yield expense_row(i, editable=editable, checkable=checkable)
 
 
 def expense_page(request: HttpRequest, instance: Expense) -> h.Element:
@@ -73,7 +93,6 @@ def expense_page(request: HttpRequest, instance: Expense) -> h.Element:
                     step="0.01",
                     min=0,
                 )[h.span(slot="end")["kr"]],
-                h.input(type="hidden", name="csrfmiddlewaretoken", value=csrf.get_token(request)),
                 h.section(".actions")[
                     (
                         instance.pk
@@ -103,8 +122,19 @@ def expense_page(request: HttpRequest, instance: Expense) -> h.Element:
 
 def bill(instance: Bill, settled_at: date) -> h.Element:
     unsettled_amount = instance.sum_unsettled_amount_at(settled_at)
+    unsettled_expenses = instance.expenses.filter(settled_at__gt=settled_at).order_by("-spent_at")
+    has_unsettled_expenses = len(unsettled_expenses) > 0
+
     return h.wa_card("#bill")[
         h.h1(slot="header")[instance.name],
+        h.wa_dropdown(slot="header-actions")[
+            h.wa_button(appearance="plain", slot="trigger")[h.wa_icon(name="gear", variant="solid", label="Hantera")],
+            h.wa_dropdown_item[
+                h.a(href=reverse("bill", args=[instance.identifier]) + "?action=copy")[
+                    h.wa_icon(slot="icon", name="copy"), "Kopiera"
+                ],
+            ],
+        ],
         h.section[
             h.wa_button(
                 variant="brand",
@@ -118,7 +148,7 @@ def bill(instance: Bill, settled_at: date) -> h.Element:
                 "Lägg till utgift",
             ],
             (
-                unsettled_amount > 0
+                has_unsettled_expenses
                 and h.table[
                     h.caption["Ej uppgjorda utgifter"],
                     h.thead[
@@ -128,7 +158,7 @@ def bill(instance: Bill, settled_at: date) -> h.Element:
                             h.th(scope="col", colspan=2)["Summa"],
                         ],
                     ],
-                    h.tbody[expenses(instance, settled_at)],
+                    h.tbody[expense_rows(unsettled_expenses, editable=True, checkable=False)],
                     h.tfoot[
                         h.tr[
                             h.th(scope="row", colspan=2)["Totalt"],
@@ -139,7 +169,7 @@ def bill(instance: Bill, settled_at: date) -> h.Element:
             ),
         ],
         (
-            unsettled_amount > 0
+            has_unsettled_expenses
             and h.section(slot="footer")[
                 h.p[f"Att betala: {format_money(unsettled_amount / 2)}"],
                 h.wa_button(
@@ -159,4 +189,42 @@ def bill_page(request: HttpRequest, instance: Bill, settled_at: date) -> h.Eleme
         request,
         bill(instance, settled_at),
         title=instance.name.capitalize(),
+    )
+
+
+def copy_page(request: HttpRequest, instance: Bill, spent_at: date) -> h.Element:
+    settled_expenses = instance.expenses.filter(spent_at__gte=spent_at).order_by("-spent_at")
+    rows = list(expense_rows(settled_expenses, editable=False, checkable=True))
+
+    return _page(
+        request,
+        h.wa_card[
+            h.wa_input(
+                label="Utgifter sedan detta datum:",
+                type="date",
+                value=spent_at.isoformat(),
+                autofocus=True,
+                hx_get=reverse("bill", args=[instance.identifier]),
+                hx_trigger="change",
+                hx_vals=json.dumps({"action": "copy"}),
+                hx_target="closest form",
+                hx_select="form",
+                hx_swap="outerHTML",
+                hx_disabled_elt="this",
+            ),
+            h.form(x_data=f"{{numberOfCheckedExpenses: {len(rows)}}}")[
+                h.table[rows] if rows else h.p["Det finns inga ej uppgjorda utgifter."],
+                h.p[h.span(x_text="numberOfCheckedExpenses"), " utgifter kommer att kopieras."],
+                h.section(".actions")[
+                    h.wa_button(
+                        variant="success",
+                        disabled=not rows,
+                        hx_post=reverse("bill", args=[instance.identifier]),
+                        hx_vals=json.dumps({"action": "copy"}),
+                        hx_disabled_elt="this",
+                    )["Kopiera"],
+                ],
+            ],
+        ],
+        title="Kopiera utgifter",
     )

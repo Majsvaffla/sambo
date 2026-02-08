@@ -29,7 +29,7 @@ class Expense(models.Model):
     description = models.CharField("beskrivning", max_length=50)
     amount = models.DecimalField("summa", max_digits=7, decimal_places=2)
     spent_at = models.DateField("spenderad", default=_today)
-    settled_at = models.DateField("uppklarad", default=date.max, blank=True)
+    settled_at = models.DateField("uppgjord", default=date.max, blank=True)
 
     bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name="expenses")
 
