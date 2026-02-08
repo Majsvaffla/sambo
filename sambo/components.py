@@ -49,13 +49,72 @@ def page(request: HttpRequest, *, title: str, main: h.Node, head: h.Node = ()) -
     ]
 
 
-def _main(id_class: str, content: h.Node) -> h.Element:
-    return h.main(id_class)[content]
+def _page(request: HttpRequest, *content: h.Node, title: str) -> h.Element:
+    return page(request, title=title, main=content)
 
 
-def stack(*content: h.Node) -> h.Element:
-    return _main(".wa-stack", content)
-
-
-def grid(*content: h.Node) -> h.Element:
-    return _main(".wa-grid", content)
+def index_page(request: HttpRequest) -> h.Element:
+    return _page(
+        request,
+        h.main(
+            ".wa-grid.wa-gap-xl",
+            x_data=r"""{
+               isCheckListDialogOpen: false,
+               isBillDialogOpen: false,
+            }""",
+        )[
+            h.section[
+                h.wa_button({"@click": "isCheckListDialogOpen = true"}, variant="brand", appearance="outlined")[
+                    h.div(".wa-flank.wa-gap-xl")[
+                        h.wa_icon(name="list-check"),
+                        h.h1["Lista"],
+                    ],
+                ],
+                h.p["Lista vardagens inköp eller resväskans innehåll"],
+                h.wa_dialog(
+                    {
+                        ":open": "isCheckListDialogOpen",
+                        "@wa-after-hide": "isCheckListDialogOpen = false",
+                    }
+                )[
+                    h.form(".wa-stack", {"@formdata": '$event.formData.set("hxneypxtz", "yum")'})[
+                        h.wa_input(label="Listans namn", name="name", required=True, autofocus=True),
+                        h.wa_button(
+                            variant="brand",
+                            hx_post=reverse("check_list_create"),
+                            hx_disabled_elt="this",
+                        )["Skapa lista"],
+                    ],
+                ],
+            ],
+            h.section[
+                h.wa_button(
+                    {"@click": "isBillDialogOpen = true"},
+                    variant="brand",
+                    appearance="outlined",
+                )[
+                    h.div(".wa-flank.wa-gap-xl")[
+                        h.wa_icon(name="coins"),
+                        h.h1["Nota"],
+                    ],
+                ],
+                h.p["Dela utgifter jämnt mellan er"],
+                h.wa_dialog(
+                    {
+                        ":open": "isBillDialogOpen",
+                        "@wa-after-hide": "isBillDialogOpen = false",
+                    }
+                )[
+                    h.form(".wa-stack", {"@formdata": '$event.formData.set("hxneypxtz", "yum")'})[
+                        h.wa_input(label="Notans namn", name="name", required=True, autofocus=True),
+                        h.wa_button(
+                            variant="brand",
+                            hx_post=reverse("bill_create"),
+                            hx_disabled_elt="this",
+                        )["Skapa nota"],
+                    ],
+                ],
+            ],
+        ],
+        title="Sambo",
+    )

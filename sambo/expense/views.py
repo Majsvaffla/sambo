@@ -25,8 +25,8 @@ def _hx_redirect_to_bill(bill_identifier: UUID) -> HttpResponse:
     return HttpResponse(headers={"HX-Redirect": reverse("bill", args=[bill_identifier])})
 
 
-def bill(request: HttpRequest, bill_identifier: UUID) -> HttpResponse:
-    bill_instance = get_object_or_404(Bill.objects, identifier=bill_identifier)
+def bill(request: HttpRequest, bill_identifier: UUID | None = None) -> HttpResponse:
+    bill_instance = get_object_or_404(Bill.objects, identifier=bill_identifier) if bill_identifier else Bill()
     today = _today()
 
     if request.method == "GET":
@@ -42,6 +42,18 @@ def bill(request: HttpRequest, bill_identifier: UUID) -> HttpResponse:
         return HttpResponse(components.bill_page(request, bill_instance, today))
 
     if request.method == "POST":
+        if bill_identifier is None:
+            if "name" not in request.POST:
+                return HttpResponse(status=400)
+
+            if request.POST.get("hxneypxtz") != "yum":
+                return HttpResponse(status=400)
+
+            assert bill_instance.pk is None
+            bill_instance.name = request.POST["name"]
+            bill_instance.save()
+            return _hx_redirect_to_bill(bill_instance.identifier)
+
         if "action" not in request.POST or "expenses" not in request.POST:
             return HttpResponse(status=400)
 
@@ -54,6 +66,9 @@ def bill(request: HttpRequest, bill_identifier: UUID) -> HttpResponse:
         return _hx_redirect_to_bill(bill_identifier)
 
     if request.method == "PATCH":
+        if bill_identifier is None:
+            return HttpResponse(status=400)
+
         bill_instance.expenses.filter(settled_at__gte=today).update(settled_at=today)
         return _hx_redirect_to_bill(bill_identifier)
 

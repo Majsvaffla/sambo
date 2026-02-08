@@ -1,12 +1,18 @@
+main {
+    padding-top: var(--wa-space-l);
+
+    @media (width < 768px) {
+        padding-top: 0;
+    }
+}
+
 main.wa-stack {
     align-items: center;
 
     wa-card {
-        margin-top: var(--wa-space-l);
         width: 650px;
 
         @media (width < 768px) {
-            margin-top: 0;
             border: none;
             box-shadow: none;
             width: 100%;
@@ -30,5 +36,25 @@ main.wa-stack {
 
     tbody tr:hover {
         background-color: var(--wa-color-neutral-fill-quiet);
+    }
+}
+
+main.wa-grid {
+    @media (width < 768px) {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    padding: 30% 10% 0 10%;
+
+    section {
+        font-size: 1.2rem;
+        text-align: center;
+
+        & > wa-button {
+            font-size: 2rem;
+            width: 100%;
+        }
     }
 }

@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from django.templatetags.static import static
 from django.urls import reverse
 
-from sambo.components import page, stack
+from sambo.components import page
 
 from .formatters import format_money
 from .models import Bill, Expense
@@ -20,7 +20,7 @@ def _page(request: HttpRequest, *content: h.Node, title: str) -> h.Element:
         head=[
             h.link(rel="stylesheet", href=static("expense/styles.css")),
         ],
-        main=stack(content),
+        main=h.main(".wa-stack")[content],
     )
 
 
