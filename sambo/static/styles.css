@@ -1,10 +1,12 @@
-main {
+main.wa-stack {
     align-items: center;
 
     wa-card {
+        margin-top: var(--wa-space-l);
         width: 650px;
 
         @media (width < 768px) {
+            margin-top: 0;
             border: none;
             box-shadow: none;
             width: 100%;

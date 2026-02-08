@@ -22,7 +22,7 @@ def details_url(instance: UniquelyIdentifiable, *, title: str, url_pattern_name:
     ]
 
 
-def page(request: HttpRequest, *, title: str, main: h.Node, head: h.Node) -> h.Element:
+def page(request: HttpRequest, *, title: str, main: h.Node, head: h.Node = ()) -> h.Element:
     return h.html(".wa-theme-awesome.wa-brand-blue.wa-cloak", lang="sv")[
         h.head[
             h.meta(charset="utf-8"),
@@ -45,5 +45,17 @@ def page(request: HttpRequest, *, title: str, main: h.Node, head: h.Node) -> h.E
             h.script(defer=True, src=static("vendor/htmx.min.js")),
             head,
         ],
-        h.body(hx_headers=f'{{"X-CSRFToken": "{csrf.get_token(request)}"}}', x_data="")[h.main(".wa-stack")[main]],
+        h.body(hx_headers=f'{{"X-CSRFToken": "{csrf.get_token(request)}"}}', x_data="")[main],
     ]
+
+
+def _main(id_class: str, content: h.Node) -> h.Element:
+    return h.main(id_class)[content]
+
+
+def stack(*content: h.Node) -> h.Element:
+    return _main(".wa-stack", content)
+
+
+def grid(*content: h.Node) -> h.Element:
+    return _main(".wa-grid", content)

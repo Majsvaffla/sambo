@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from django.templatetags.static import static
 from django.urls import reverse
 
-from sambo.components import page
+from sambo.components import page, stack
 
 from .formatters import format_money
 from .models import Bill, Expense
@@ -20,7 +20,7 @@ def _page(request: HttpRequest, *content: h.Node, title: str) -> h.Element:
         head=[
             h.link(rel="stylesheet", href=static("expense/styles.css")),
         ],
-        main=content,
+        main=stack(content),
     )
 
 
@@ -125,7 +125,7 @@ def bill(instance: Bill, settled_at: date) -> h.Element:
     unsettled_expenses = instance.expenses.filter(settled_at__gt=settled_at).order_by("-spent_at")
     has_unsettled_expenses = len(unsettled_expenses) > 0
 
-    return h.wa_card("#bill")[
+    return h.wa_card[
         h.h1(slot="header")[instance.name],
         h.wa_dropdown(slot="header-actions")[
             h.wa_button(appearance="plain", slot="trigger")[h.wa_icon(name="gear", variant="solid", label="Hantera")],

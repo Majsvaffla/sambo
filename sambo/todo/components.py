@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from django.templatetags.static import static
 from django.urls import reverse
 
-from sambo.components import page
+from sambo.components import page, stack
 
 from .models import CheckList, CheckListItem
 
@@ -48,8 +48,8 @@ def check_list(request: HttpRequest, instance: CheckList) -> h.Element:
         head=[
             h.link(rel="stylesheet", href=static("todo/styles.css")),
         ],
-        main=[
-            h.section(".wa-card")[
+        main=stack(
+            h.wa_card[
                 h.h1(slot="header")[instance.name],
                 h.form(
                     hx_post=reverse("check_list", args=[instance.identifier]),
@@ -74,6 +74,6 @@ def check_list(request: HttpRequest, instance: CheckList) -> h.Element:
                     ],
                 ],
                 h.ol(".wa-stack.wa-gap-m")[items(instance)],
-            ]
-        ],
+            ],
+        ),
     )
