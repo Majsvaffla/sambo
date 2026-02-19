@@ -11,6 +11,7 @@ dependencies = [
   "dj-database-url>=3.1.0",
   "django>=6.0.1",
   "django-stubs-ext>=5.2.8",
+  "filetype>=1.2.0",
   "gunicorn>=23.0.0",
   "htpy>=25.12.0",
   "psycopg[binary]>=3.3.2",

@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "sambo",
     "sambo.todo",
     "sambo.expense",
+    "sambo.share",
 ]
 
 MIDDLEWARE = [
