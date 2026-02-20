@@ -4,6 +4,8 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 
+from sambo import honeypot
+
 from . import components
 from .forms import ItemForm
 from .models import CheckList, CheckListItem
@@ -24,8 +26,8 @@ def check_list(request: HttpRequest, list_identifier: UUID | None = None) -> Htt
             if "name" not in request.POST:
                 return HttpResponse(status=400)
 
-            if request.POST.get("hxneypxtz") != "yum":
-                return HttpResponse(status=400)
+            if honeypot.is_absent(request):
+                return honeypot.respond()
 
             assert list_instance.pk is None
             list_instance.name = request.POST["name"]

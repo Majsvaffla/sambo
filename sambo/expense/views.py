@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 
+from sambo import honeypot
+
 from . import components
 from .forms import ExpenseForm
 from .models import Bill, Expense
@@ -46,8 +48,8 @@ def bill(request: HttpRequest, bill_identifier: UUID | None = None) -> HttpRespo
             if "name" not in request.POST:
                 return HttpResponse(status=400)
 
-            if request.POST.get("hxneypxtz") != "yum":
-                return HttpResponse(status=400)
+            if honeypot.is_absent(request):
+                return honeypot.respond()
 
             assert bill_instance.pk is None
             bill_instance.name = request.POST["name"]

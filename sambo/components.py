@@ -7,6 +7,8 @@ from django.middleware import csrf
 from django.templatetags.static import static
 from django.urls import reverse
 
+from . import honeypot
+
 if t.TYPE_CHECKING:
     from uuid import UUID
 
@@ -77,7 +79,7 @@ def index_page(request: HttpRequest) -> h.Element:
                         "@wa-after-hide": "isCheckListDialogOpen = false",
                     }
                 )[
-                    h.form(".wa-stack", {"@formdata": '$event.formData.set("hxneypxtz", "yum")'})[
+                    h.form(".wa-stack", honeypot.as_x_on_formdata())[
                         h.wa_input(label="Listans namn", name="name", required=True, autofocus=True),
                         h.wa_button(
                             variant="brand",
@@ -105,7 +107,7 @@ def index_page(request: HttpRequest) -> h.Element:
                         "@wa-after-hide": "isBillDialogOpen = false",
                     }
                 )[
-                    h.form(".wa-stack", {"@formdata": '$event.formData.set("hxneypxtz", "yum")'})[
+                    h.form(".wa-stack", honeypot.as_x_on_formdata())[
                         h.wa_input(label="Notans namn", name="name", required=True, autofocus=True),
                         h.wa_button(
                             variant="brand",
