@@ -52,7 +52,7 @@ def upload(request: HttpRequest) -> HttpResponse:
 
         upload_instance = Upload.objects.create(name=file.name, content=content)
         return HttpResponse(
-            components.uploaded(request, upload_instance, copy_to_clipboard_on_load=True),
+            components.uploaded(request, upload_instance),
             headers={"HX-Push-Url": reverse("uploaded", args=[upload_instance.identifier])},
         )
 

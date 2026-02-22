@@ -36,14 +36,9 @@ wa-progress-ring {
     --indicator-width: 2rem;
 }
 
-@media not print {
-    section:has(img) {
+section:has(img) {
+    @media not print {
         background-color: #222222;
-
-        wa-button-group {
-            position: absolute;
-            bottom: 5rem;
-        }
     }
 
     img {
@@ -54,18 +49,41 @@ wa-progress-ring {
         max-height: 100%;
     }
 
-    wa-button-group[orientation="vertical"] {
-        display: none;
-    }
+    wa-button-group {
+        position: absolute;
+        bottom: 5rem;
 
-    @media (width < 768px) {
-        wa-button-group {
+        &[orientation="vertical"] {
+            display: none;
+        }
+        
+        @media (width < 768px) {
             &[orientation="horizontal"] {
                 display: none;
             }
 
             &[orientation="vertical"] {
                 display: initial;
+            }
+        }
+
+        @media (width < 400px) {
+            &[orientation="vertical"] {
+                display: none;
+            }
+
+            &[orientation="horizontal"] {
+                display: initial;
+                bottom: .4rem;
+
+                wa-button {
+                    &::part(label) {
+                        display: none;
+                    }
+                    wa-icon {
+                        margin-inline-end: 0;
+                    }
+                }
             }
         }
     }

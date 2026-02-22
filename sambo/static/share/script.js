@@ -1,9 +1,9 @@
-function getFileItems(e) {
-    return [...e.dataTransfer.items].filter(item => item.kind === "file")
+function getFileItems(data) {
+    return [...data.items].filter(item => item.kind === "file")
 }
 
 function preventDefaultDragoverForFiles(e) {
-    const fileItems = getFileItems(e)
+    const fileItems = getFileItems(e.dataTransfer)
     if (fileItems.length > 0) {
         e.preventDefault()
         const dropZone = document.getElementById("drop-zone")
@@ -14,7 +14,7 @@ function preventDefaultDragoverForFiles(e) {
 }
 
 function handleDragover(e) {
-    const fileItems = getFileItems(e)
+    const fileItems = getFileItems(e.dataTransfer)
     if (fileItems.length > 0) {
         e.preventDefault()
         if (fileItems.some(item => item.type.startsWith("image/"))) {
@@ -25,18 +25,15 @@ function handleDragover(e) {
     }
 }
 
-function handleDrop(e, fileInputElement) {
-    console.log(fileInputElement)
-    console.log(e)
-    e.preventDefault()
-    if (e.dataTransfer.files.length != 1) {
+function handleFiles(files, fileInputElement) {
+    if (files.length != 1) {
         return
     }
-    fileInputElement.files = e.dataTransfer.files
+    fileInputElement.files = files
 }
 
-function handleProgress(e, progressRingElement) {
-    progressRingElement.setAttribute("value", e.detail.loaded / e.detail.total * 100)
+function handleProgress(e) {
+    e.currentTarget.setAttribute("value", e.detail.loaded / e.detail.total * 100)
 }
 
 window.addEventListener("dragover", preventDefaultDragoverForFiles)
