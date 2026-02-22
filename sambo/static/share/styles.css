@@ -36,6 +36,22 @@ wa-progress-ring {
     --indicator-width: 2rem;
 }
 
+wa-button-group {
+    &[orientation="vertical"] {
+        display: none;
+    }
+
+    @media (width < 768px) {
+        &[orientation="horizontal"] {
+            display: none;
+        }
+
+        &[orientation="vertical"] {
+            display: initial;
+        }
+    }
+}
+
 section:has(img) {
     @media not print {
         background-color: #222222;
@@ -53,20 +69,6 @@ section:has(img) {
         position: absolute;
         bottom: 5rem;
 
-        &[orientation="vertical"] {
-            display: none;
-        }
-        
-        @media (width < 768px) {
-            &[orientation="horizontal"] {
-                display: none;
-            }
-
-            &[orientation="vertical"] {
-                display: initial;
-            }
-        }
-
         @media (width < 400px) {
             &[orientation="vertical"] {
                 display: none;
@@ -80,6 +82,7 @@ section:has(img) {
                     &::part(label) {
                         display: none;
                     }
+
                     wa-icon {
                         margin-inline-end: 0;
                     }
