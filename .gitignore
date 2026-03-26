@@ -6,3 +6,4 @@
 .cache
 /dist
 .env
+.dev-static

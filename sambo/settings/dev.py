@@ -13,3 +13,5 @@ MEDIA_ROOT = PROJECT_ROOT / ".dev-media"
 SERVE_DEV_MEDIA = True
 
 EMAIL_BACKEND = "sambo.utils.email_debug_backend.EmailBackend"
+
+STATIC_ROOT = PROJECT_ROOT.parent / ".dev-static"
