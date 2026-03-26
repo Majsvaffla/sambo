@@ -150,7 +150,6 @@ def bill(instance: Bill, settled_at: date) -> h.Element:
             (
                 has_unsettled_expenses
                 and h.table[
-                    h.caption["Ej uppgjorda utgifter"],
                     h.thead[
                         h.tr[
                             h.th(scope="col")["Beskrivning"],
