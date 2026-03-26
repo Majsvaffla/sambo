@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import calendar
 from datetime import date
 from typing import TYPE_CHECKING
 
@@ -62,7 +63,16 @@ def bill(request: HttpRequest, bill_identifier: UUID | None = None) -> HttpRespo
         assert request.POST["action"] == "copy"
 
         bill_instance.expenses.bulk_create(
-            Expense(description=expense.description, amount=0, bill=bill_instance)
+            Expense(
+                description=expense.description,
+                spent_at=date(
+                    today.year,
+                    today.month,
+                    min(expense.spent_at.day, calendar.monthrange(today.year, today.month)[1]),
+                ),
+                amount=0,
+                bill=bill_instance,
+            )
             for expense in bill_instance.expenses.filter(pk__in=(int(x) for x in request.POST.getlist("expenses")))
         )
         return _hx_redirect_to_bill(bill_identifier)
