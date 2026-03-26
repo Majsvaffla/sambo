@@ -50,7 +50,7 @@ def _toolbar(request: HttpRequest, upload_instance: Upload, *, is_image_rendered
         h.wa_button(
             variant=button_variant,
             hx_delete=relative_uploaded_url,
-            hx_vals=honeypot.as_json(),
+            hx_vals=honeypot.as_hx_vals(),
             hx_target="main",
             hx_confirm="Vill du ta bort den uppladdade filen?",
         )[
@@ -97,7 +97,7 @@ def drop_zone() -> h.Element:
                 hx_post=reverse("upload"),
                 hx_encoding="multipart/form-data",
                 hx_trigger="change,drop from:#drop-zone,paste from:window",
-                hx_vals=honeypot.as_json(),
+                hx_vals=honeypot.as_hx_vals(),
                 hx_target="main",
             ),
         ],

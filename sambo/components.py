@@ -79,12 +79,13 @@ def index_page(request: HttpRequest) -> h.Element:
                         "@wa-after-hide": "isCheckListDialogOpen = false",
                     }
                 )[
-                    h.form(".wa-stack", honeypot.as_x_on_formdata())[
+                    h.form(".wa-stack")[
                         h.wa_input(label="Listans namn", name="name", required=True, autofocus=True),
                         h.wa_button(
                             variant="brand",
                             hx_post=reverse("check_list_create"),
                             hx_disabled_elt="this",
+                            hx_vals=honeypot.as_hx_vals(),
                         )["Skapa lista"],
                     ],
                 ],
@@ -107,12 +108,13 @@ def index_page(request: HttpRequest) -> h.Element:
                         "@wa-after-hide": "isBillDialogOpen = false",
                     }
                 )[
-                    h.form(".wa-stack", honeypot.as_x_on_formdata())[
+                    h.form(".wa-stack")[
                         h.wa_input(label="Notans namn", name="name", required=True, autofocus=True),
                         h.wa_button(
                             variant="brand",
                             hx_post=reverse("bill_create"),
                             hx_disabled_elt="this",
+                            hx_vals=honeypot.as_hx_vals(),
                         )["Skapa nota"],
                     ],
                 ],

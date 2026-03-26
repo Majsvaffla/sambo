@@ -13,8 +13,8 @@ if t.TYPE_CHECKING:
         hxneypxtz: t.Literal[HoneyPotValue]
 
 
-def as_x_on_formdata() -> dict[str, str]:
-    return {"x_on_formdata": f'$event.formData.set("{_key}", "{_value}")'}
+def as_hx_vals() -> dict[str, str]:
+    return json.dumps(as_dict())
 
 
 def as_dict() -> HoneyPotDict:
@@ -22,10 +22,6 @@ def as_dict() -> HoneyPotDict:
 
 
 [(_key, _value)] = as_dict().items()
-
-
-def as_json() -> str:
-    return json.dumps(as_dict())
 
 
 def is_absent(request: HttpRequest) -> bool:
