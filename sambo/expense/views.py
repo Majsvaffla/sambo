@@ -70,6 +70,7 @@ def bill(request: HttpRequest, bill_identifier: UUID | None = None) -> HttpRespo
                     today.month,
                     min(expense.spent_at.day, calendar.monthrange(today.year, today.month)[1]),
                 ),
+                spent_by="",
                 amount=0,
                 bill=bill_instance,
             )

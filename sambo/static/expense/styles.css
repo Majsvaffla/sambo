@@ -5,6 +5,10 @@ main {
 
     section {
         text-align: center;
+
+        h2 {
+            text-align: left;
+        }
     }
 
     form .actions {

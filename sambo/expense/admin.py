@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 class ExpenseInline(admin.TabularInline[Expense, Bill]):
     model = Expense
-    fields = ["description", "amount", "spent_at", "settled_at"]
+    fields = ["description", "amount", "spent_at", "spent_by", "settled_at"]
     extra = 0
 
 

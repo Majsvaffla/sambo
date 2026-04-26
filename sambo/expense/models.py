@@ -1,6 +1,5 @@
 import uuid
 from datetime import date
-from decimal import Decimal
 
 from django.db import models
 from django.utils import timezone
@@ -21,14 +20,12 @@ class Bill(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def sum_unsettled_amount_at(self, d: date) -> Decimal:
-        return sum((x.amount for x in self.expenses.filter(settled_at__gt=d)), start=Decimal())
-
 
 class Expense(models.Model):
     description = models.CharField("beskrivning", max_length=50)
     amount = models.DecimalField("summa", max_digits=7, decimal_places=2)
     spent_at = models.DateField("spenderad", default=_today)
+    spent_by = models.CharField("spenderad av", blank=True)
     settled_at = models.DateField("uppgjord", default=date.max, blank=True)
 
     bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name="expenses")
