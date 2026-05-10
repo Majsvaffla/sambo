@@ -14,9 +14,6 @@ ALLOWED_HOSTS: list[str] = ["sambo.tordavid.xyz"]
 if "DATABASE_URL" in os.environ:
     DATABASES = {"default": dj_database_url.config()}
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = "/sambo/media"
-
 STATIC_ROOT = "/sambo/static"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

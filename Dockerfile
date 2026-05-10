@@ -12,7 +12,5 @@ RUN python -m compileall -q /usr/local/lib/python3.12/site-packages
 RUN rm sambo-0.0.1-py3-none-any.whl
 
 ENV STATIC_ROOT=/sambo/static
-ENV MEDIA_ROOT=/sambo/media
 
 VOLUME ${STATIC_ROOT}
-VOLUME ${MEDIA_ROOT}

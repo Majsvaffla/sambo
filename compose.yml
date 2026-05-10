@@ -5,7 +5,6 @@ services:
       - 127.0.0.1:8002:8000
     volumes:
       - /var/www/sambo.tordavid.xyz/static:/sambo/static
-      - /var/www/sambo.tordavid.xyz/media:/sambo/media
     environment:
       DJANGO_SETTINGS_MODULE: sambo.settings.prod
       DATABASE_URL: ${DATABASE_URL}
