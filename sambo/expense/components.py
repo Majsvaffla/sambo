@@ -199,7 +199,7 @@ def bill(instance: Bill, settled_at: date) -> h.Element:
         (
             has_unsettled_expenses
             and h.section(slot="footer")[
-                h.p[f"Att betala: {format_money(unsettled_amount / number_of_spendors)}"],
+                h.p[f"Att betala: {format_money((unsettled_amount / number_of_spendors) if number_of_spendors > 0 else 0)}"],
                 h.wa_button(
                     slot="footer-actions",
                     variant="brand",
