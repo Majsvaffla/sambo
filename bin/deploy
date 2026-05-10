@@ -3,11 +3,11 @@
 set -xeuo pipefail
 
 copy-plaintext() {
-    scp "$1" "root@sambo.tordavid.xyz:/var/lib/sambo/$1" > /dev/null
+    scp "$1" "sambo@sambo.tordavid.xyz:/var/lib/sambo/$1" > /dev/null
 }
 
 copy-encrypted() {
-    age --decrypt --identity "$AGE_IDENTITY" "$1" | ssh root@sambo.tordavid.xyz "cat > /var/lib/sambo/$2"
+    age --decrypt --identity "$AGE_IDENTITY" "$1" | ssh sambo@sambo.tordavid.xyz "cat > /var/lib/sambo/$2"
 }
 
 # Copy required configuration files.
@@ -17,7 +17,7 @@ copy-plaintext init-user-db.sh
 copy-encrypted prod.env.enc .env
 
 docker() {
-    ssh root@sambo.tordavid.xyz "docker $@"
+    ssh sambo@sambo.tordavid.xyz "docker $@"
 }
 
 # Pull image and restart services.
