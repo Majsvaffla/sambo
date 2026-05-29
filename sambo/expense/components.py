@@ -140,7 +140,8 @@ def _expenses_table(expenses: Sequence[Expense]) -> h.Element:
         h.tbody[expense_rows(expenses, editable=True, checkable=False)],
         h.tfoot[
             [
-                h.th(scope="row", colspan=2)["Totalt"][format_money(amount)],
+                h.th(scope="row", colspan=2)["Totalt"],
+                h.td[format_money(amount)],
             ],
         ],
     ]
