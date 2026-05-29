@@ -6,9 +6,9 @@ from .models import Expense
 class ExpenseForm(forms.ModelForm[Expense]):
     class Meta:
         model = Expense
-        fields = ("description", "spent_at", "spent_by", "amount")
+        fields = ("description", "spent_at", "paid_by", "amount")
 
-    def clean_spent_by(self) -> str:
-        spent_by = self.cleaned_data.get("spent_by", "").strip().lower()
-        assert isinstance(spent_by, str)
-        return spent_by
+    def clean_paid_by(self) -> str:
+        paid_by = self.cleaned_data.get("paid_by", "").strip().lower()
+        assert isinstance(paid_by, str)
+        return paid_by

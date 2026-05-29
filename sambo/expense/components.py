@@ -87,9 +87,9 @@ def expense_page(request: HttpRequest, instance: Expense) -> h.Element:
                     required=True,
                 ),
                 h.wa_input(
-                    label="Av",
-                    name="spent_by",
-                    value=instance.spent_by.capitalize(),
+                    label="Betalat av",
+                    name="paid_by",
+                    value=instance.paid_by.capitalize(),
                 ),
                 h.wa_input(
                     label="Summa",
@@ -167,7 +167,7 @@ def bill(instance: Bill, settled_at: date) -> h.Element:
     unsettled_amount = Decimal(0)
 
     for expense in instance.expenses.filter(settled_at__gt=settled_at).order_by("-spent_at"):
-        unsettled_expenses_by_spendor[expense.spent_by].append(expense)
+        unsettled_expenses_by_spendor[expense.paid_by].append(expense)
         unsettled_amount += expense.amount
 
     number_of_spendors = len({spendor for spendor in unsettled_expenses_by_spendor.keys() if spendor})
