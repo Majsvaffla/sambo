@@ -9,4 +9,5 @@ urlpatterns = [
     path("<uuid:bill_identifier>", views.bill, name="bill"),
     path("<uuid:bill_identifier>/expense", views.expense, name="expense_create"),
     path("<uuid:bill_identifier>/expense/<int:expense_pk>", views.expense, name="expense_edit"),
+    path("<uuid:bill_identifier>/settle", views.settle, name="settle"),
 ]

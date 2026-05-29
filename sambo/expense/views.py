@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import calendar
 from datetime import date
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from dateutil.relativedelta import relativedelta
@@ -78,13 +79,6 @@ def bill(request: HttpRequest, bill_identifier: UUID | None = None) -> HttpRespo
         )
         return _hx_redirect_to_bill(bill_identifier)
 
-    if request.method == "PATCH":
-        if bill_identifier is None:
-            return HttpResponse(status=400)
-
-        bill_instance.expenses.filter(settled_at__gte=today).update(settled_at=today)
-        return _hx_redirect_to_bill(bill_identifier)
-
     return HttpResponse(status=405)
 
 
@@ -112,5 +106,32 @@ def expense(request: HttpRequest, bill_identifier: UUID, expense_pk: int | None 
             return _hx_redirect_to_bill(bill_identifier)
 
         return HttpResponse(status=400)
+
+    return HttpResponse(status=405)
+
+
+def settle(request: HttpRequest, bill_identifier: UUID) -> HttpResponse:
+    bill_instance = get_object_or_404(Bill.objects, identifier=bill_identifier)
+    today = _today()
+
+    if request.method == "GET":
+        spendors: set[str] = set()
+        unsettled_amount = Decimal(0)
+
+        for expense in bill_instance.expenses.filter(settled_at__gt=today).order_by("-spent_at"):
+            if expense.paid_by:
+                spendors.add(expense.paid_by)
+            unsettled_amount += expense.amount
+
+        try:
+            split_by = int(request.GET.get("split_by", len(spendors)))
+        except ValueError:
+            return HttpResponse(status=400)
+
+        return HttpResponse(components.settle_page(request, bill_instance, unsettled_amount, max(2, split_by)))
+
+    if request.method == "POST":
+        bill_instance.expenses.filter(settled_at__gte=today).update(settled_at=today)
+        return _hx_redirect_to_bill(bill_identifier)
 
     return HttpResponse(status=405)

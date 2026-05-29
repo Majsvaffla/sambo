@@ -169,6 +169,37 @@ def _unsettled_expenses_tables(unsettled_expenses_by_spendor: dict[str, list[Exp
         yield _expenses_table(expenses)
 
 
+def settle_page(request: HttpRequest, bill_instance: Bill, unsettled_amount: Decimal, split_by: int) -> h.Element:
+    return _page(
+        request,
+        h.wa_card[
+            h.wa_input(
+                label="Antal att göra upp emellan",
+                type="number",
+                min=2,
+                name="split_by",
+                autofocus=True,
+                value=split_by,
+                hx_get=reverse("settle", args=[bill_instance.identifier]),
+                hx_trigger="change",
+                hx_target="next form",
+                hx_select="form",
+            ),
+            h.form[
+                h.p[f"Att betala: {format_money(unsettled_amount / split_by)}"],
+                h.section(".actions")[
+                    h.wa_button(
+                        variant="success",
+                        hx_post=reverse("settle", args=[bill_instance.identifier]),
+                        hx_disabled_elt="this",
+                    )["Gör upp"]
+                ],
+            ],
+        ],
+        title="Gör upp",
+    )
+
+
 def bill(instance: Bill, settled_at: date) -> h.Element:
     unsettled_expenses_by_spendor: dict[str, list[Expense]] = defaultdict(list)
     unsettled_amount = Decimal(0)
@@ -177,7 +208,6 @@ def bill(instance: Bill, settled_at: date) -> h.Element:
         unsettled_expenses_by_spendor[expense.paid_by].append(expense)
         unsettled_amount += expense.amount
 
-    number_of_spendors = len({spendor for spendor in unsettled_expenses_by_spendor.keys() if spendor})
     has_unsettled_expenses = len(unsettled_expenses_by_spendor) > 0
 
     return h.wa_card[
@@ -207,13 +237,10 @@ def bill(instance: Bill, settled_at: date) -> h.Element:
         (
             has_unsettled_expenses
             and h.section(slot="footer")[
-                h.p[f"Att betala: {format_money((unsettled_amount / number_of_spendors) if number_of_spendors > 0 else 0)}"],
                 h.wa_button(
                     slot="footer-actions",
                     variant="brand",
-                    hx_patch=reverse("bill", args=[instance.identifier]),
-                    hx_confirm="Är du säker på att du vill göra upp om alla utgifter?",
-                    hx_disabled_elt="this",
+                    href=reverse("settle", args=[instance.identifier]),
                 )["Gör upp"],
             ]
         ),
