@@ -147,19 +147,26 @@ def _expenses_table(expenses: Sequence[Expense]) -> h.Element:
     ]
 
 
-def _unsettled_expenses_tables(
-    unsettled_expenses_by_spendor: dict[str, list[Expense]], number_of_spendors: int
-) -> Iterator[h.Element]:
-    unsettled_expenses_without_spendor = unsettled_expenses_by_spendor.pop("")
-    show_spendors = number_of_spendors > 1
-    for spendor, unsettled_expenses in unsettled_expenses_by_spendor.items():
-        if show_spendors:
-            yield h.h2[spendor.capitalize()]
-            yield _expenses_table(unsettled_expenses)
+def _get_sorted_expense_by_spendor(
+    unsettled_expenses_by_spendor: dict[str, list[Expense]],
+) -> Iterator[tuple[str, list[Expense]]]:
+    unsettled_expenses_without_spendor = unsettled_expenses_by_spendor.pop("", [])
+    for spendor in sorted(unsettled_expenses_by_spendor):
+        yield spendor, unsettled_expenses_by_spendor[spendor]
     if unsettled_expenses_without_spendor:
+        yield "", unsettled_expenses_without_spendor
+
+
+def _unsettled_expenses_tables(unsettled_expenses_by_spendor: dict[str, list[Expense]]) -> Iterator[h.Element]:
+    sorted_expenses = list(_get_sorted_expense_by_spendor(unsettled_expenses_by_spendor))
+    show_spendors = len(sorted_expenses) > 1
+    for spendor, expenses in sorted_expenses:
         if show_spendors:
-            yield h.h2(style="font-style: italic")["Övrigt"]
-        yield _expenses_table(unsettled_expenses_without_spendor)
+            if spendor:
+                yield h.h2[spendor.capitalize()]
+            else:
+                yield h.h2(style="font-style: italic")["Övrigt"]
+        yield _expenses_table(expenses)
 
 
 def bill(instance: Bill, settled_at: date) -> h.Element:
@@ -195,7 +202,7 @@ def bill(instance: Bill, settled_at: date) -> h.Element:
                 h.wa_icon(slot="start", name="plus"),
                 "Lägg till utgift",
             ],
-            has_unsettled_expenses and _unsettled_expenses_tables(unsettled_expenses_by_spendor, number_of_spendors),
+            has_unsettled_expenses and _unsettled_expenses_tables(unsettled_expenses_by_spendor),
         ],
         (
             has_unsettled_expenses
