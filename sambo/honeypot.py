@@ -13,7 +13,7 @@ if t.TYPE_CHECKING:
         hxneypxtz: t.Literal[HoneyPotValue]
 
 
-def as_hx_vals() -> dict[str, str]:
+def as_hx_vals() -> str:
     return json.dumps(as_dict())
 
 
