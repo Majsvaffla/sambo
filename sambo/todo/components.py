@@ -15,6 +15,9 @@ def item(instance: CheckListItem) -> h.Element:
         {
             "@focus": '$el.appearance = "outlined"',
             "@blur": '$el.appearance = "filled"',
+            "@keyup.shift.backspace": """$el.value.length == 0 && (
+                $el.querySelector("wa-icon").dispatchEvent(new CustomEvent("delete-check-list-item"))
+            )""",
         },
         pill=True,
         size="medium",
@@ -30,6 +33,7 @@ def item(instance: CheckListItem) -> h.Element:
             name="minus",
             variant="solid",
             hx_delete=reverse("check_list_item", args=[instance.list.identifier, instance.pk]),
+            hx_trigger="click,delete-check-list-item",
             hx_target="ol",
             hx_swap="innerHTML",
         )
