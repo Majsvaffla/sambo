@@ -1,4 +1,5 @@
 import importlib.resources
+from pathlib import Path
 
 import dj_database_url
 import django_stubs_ext
@@ -11,7 +12,10 @@ DATABASES = {
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
-PROJECT_ROOT = importlib.resources.files("sambo")
+# Type hints (and docs) says a Traversable object is returned from importlib.resources.files but
+# an actual Path object is returned runtime thus we wrap it in its constructor to force the proper type.
+# error: Argument 1 to "Path" has incompatible type "Traversable"; expected "str | PathLike[str]"
+PROJECT_ROOT = Path(importlib.resources.files("sambo"))  # type: ignore[arg-type]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
