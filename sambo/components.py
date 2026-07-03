@@ -79,14 +79,14 @@ def index_page(request: HttpRequest) -> h.Element:
                         "@wa-after-hide": "isCheckListDialogOpen = false",
                     }
                 )[
-                    h.form(".wa-stack")[
+                    h.form(
+                        ".wa-stack",
+                        hx_post=reverse("check_list_create"),
+                        hx_disabled_elt="find wa-button[type=submit]",
+                        hx_vals=honeypot.as_hx_vals(),
+                    )[
                         h.wa_input(label="Listans namn", name="name", required=True, autofocus=True),
-                        h.wa_button(
-                            variant="brand",
-                            hx_post=reverse("check_list_create"),
-                            hx_disabled_elt="this",
-                            hx_vals=honeypot.as_hx_vals(),
-                        )["Skapa lista"],
+                        h.wa_button(variant="brand", type="submit")["Skapa lista"],
                     ],
                 ],
             ],
@@ -108,14 +108,14 @@ def index_page(request: HttpRequest) -> h.Element:
                         "@wa-after-hide": "isBillDialogOpen = false",
                     }
                 )[
-                    h.form(".wa-stack")[
+                    h.form(
+                        ".wa-stack",
+                        hx_post=reverse("bill_create"),
+                        hx_disabled_elt="find wa-button[type=submit]",
+                        hx_vals=honeypot.as_hx_vals(),
+                    )[
                         h.wa_input(label="Notans namn", name="name", required=True, autofocus=True),
-                        h.wa_button(
-                            variant="brand",
-                            hx_post=reverse("bill_create"),
-                            hx_disabled_elt="this",
-                            hx_vals=honeypot.as_hx_vals(),
-                        )["Skapa nota"],
+                        h.wa_button(variant="brand", type="submit")["Skapa nota"],
                     ],
                 ],
             ],

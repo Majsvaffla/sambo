@@ -68,7 +68,14 @@ def expense_page(request: HttpRequest, instance: Expense) -> h.Element:
     return _page(
         request,
         h.wa_card[
-            h.form[
+            h.form(
+                hx_post=(
+                    reverse("expense_edit", args=[instance.bill.identifier, instance.pk])
+                    if instance.pk
+                    else reverse("expense_create", args=[instance.bill.identifier])
+                ),
+                hx_disabled_elt="find wa-button[type=submit]",
+            )[
                 h.wa_input(
                     label="Beskrivning",
                     type="text",
@@ -111,15 +118,7 @@ def expense_page(request: HttpRequest, instance: Expense) -> h.Element:
                             hx_confirm=f"Är du säker på att du vill ta bort {instance.description}?",
                         )["Ta bort"]
                     ),
-                    h.wa_button(
-                        variant="success",
-                        hx_post=(
-                            reverse("expense_edit", args=[instance.bill.identifier, instance.pk])
-                            if instance.pk
-                            else reverse("expense_create", args=[instance.bill.identifier])
-                        ),
-                        hx_disabled_elt="this",
-                    )["Spara"],
+                    h.wa_button(variant="success", type="submit")["Spara"],
                 ],
             ],
         ],
@@ -185,15 +184,9 @@ def settle_page(request: HttpRequest, bill_instance: Bill, unsettled_amount: Dec
                 hx_target="next form",
                 hx_select="form",
             ),
-            h.form[
+            h.form(hx_post=reverse("settle", args=[bill_instance.identifier]), hx_disabled_elt="find wa-button")[
                 h.p[f"Att betala: {format_money(unsettled_amount / split_by)}"],
-                h.section(".actions")[
-                    h.wa_button(
-                        variant="success",
-                        hx_post=reverse("settle", args=[bill_instance.identifier]),
-                        hx_disabled_elt="this",
-                    )["Gör upp"]
-                ],
+                h.section(".actions")[h.wa_button(variant="success", type="submit")["Gör upp"]],
             ],
         ],
         title="Gör upp",
@@ -276,18 +269,15 @@ def copy_page(request: HttpRequest, instance: Bill, spent_at: date) -> h.Element
                 hx_swap="outerHTML",
                 hx_disabled_elt="this",
             ),
-            h.form(x_data=f"{{numberOfCheckedExpenses: {len(rows)}}}")[
+            h.form(
+                x_data=f"{{numberOfCheckedExpenses: {len(rows)}}}",
+                hx_post=reverse("bill", args=[instance.identifier]),
+                hx_vals=json.dumps({"action": "copy"}),
+                hx_disabled_elt="find wa-button",
+            )[
                 h.table[rows] if rows else h.p["Det finns inga ej uppgjorda utgifter."],
                 h.p[h.span(x_text="numberOfCheckedExpenses"), " utgifter kommer att kopieras."],
-                h.section(".actions")[
-                    h.wa_button(
-                        variant="success",
-                        disabled=not rows,
-                        hx_post=reverse("bill", args=[instance.identifier]),
-                        hx_vals=json.dumps({"action": "copy"}),
-                        hx_disabled_elt="this",
-                    )["Kopiera"],
-                ],
+                h.section(".actions")[h.wa_button(variant="success", disabled=not rows, type="submit")["Kopiera"],],
             ],
         ],
         title="Kopiera utgifter",
